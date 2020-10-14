@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+	<title>Digital Clock</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body style="background-color:black;display: flex;flex-wrap: wrap;">
+	<div class="res" style="width:50%">
+		<div class="bg" style="position:absolute;display:none">
+			<div class="clock">
+
+				<img src="wclock.jpg" class="d" width="100%">
+				<img src="dclock.jpg" class="w" width="100%">
+
+				<div class="hour">
+					<div class="hr"></div>
+				</div>
+				<div class="min">
+					<div class="mn"></div>
+				</div>
+				<div class="sec">
+					<div class="sc"></div>
+				</div>
+			</div>
+		</div>
+
+		<div style="width: 370px;margin:150px auto 0;float: right">
+   		
+			<p id="date" style="color: #C0B08F;text-align: right;margin: 0 10px 9px 0; font: normal 18px Arial, Helvetica, sans-serif;"></p>
+
+			<div id="clock" class="light">
+
+				<div class="display">
+					<div class="weekdays"></div>
+					<div class="ampm"></div>
+					<div class="alarm"></div>
+					<div class="digits"></div>
+				</div>
+			</div>
+
+
+		</div>
+		<div id="theme">
+			<div class="button-holder">
+				<a class="button d">Dark Mode</a>
+				<a class="button w">Bright Mode</a>
+			</div>
+		</div>
+	</div>
+	<div class="res" style="width: 45%">
+		<div class="clock main">
+			<img src="wclock.jpg" class="d" width="100%">
+			<img src="dclock.jpg" class="w" width="100%">
+
+
+			<div class="hour">
+				<div class="hr" id="hr"></div>
+			</div>
+			<div class="min">
+				<div class="mn" id="mn"></div>
+			</div>
+			<div class="sec">
+				<div class="sc" id="sc"></div>
+			</div>
+		</div>
+
+	</div>
+	
+	<script type="text/javascript">
+    window.onload = setInterval(clock,1000);
+
+    function clock()
+    {
+	  var d = new Date();
+	  
+	  var date = d.getDate();
+	  
+	  var month = d.getMonth();
+	  var montharr =["Jan,","Feb,","Mar,","April,","May,","June,","July,","Aug,","Sep,","October,","Nov,","Dec,"];
+	  month=montharr[month];
+	  
+	  var year = d.getFullYear();
+	
+	  document.getElementById("date").innerHTML=date+" "+month+" "+year;
+    }
+    </script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.0.0/moment.min.js"></script>
+
+	<script type="text/javascript">
+	$(function(){
+
+    var clock = $('#clock'),
+        alarm = clock.find('.alarm'),
+        ampm = clock.find('.ampm');
+
+    var digit_to_name = 'zero one two three four five six seven eight nine'.split(' ');
+
+    var digits = {};
+
+    var positions = [
+        'h1', 'h2', ':', 'm1', 'm2', ':', 's1', 's2'
+    ];
+
+    var digit_holder = clock.find('.digits');
+
+    $.each(positions, function(){
+
+        if(this == ':'){
+            digit_holder.append('<div class="dots">');
+        }
+        else{
+
+            var pos = $('<div>');
+
+            for(var i=1; i<8; i++){
+                pos.append('<span class="d' + i + '">');
+            }
+
+            digits[this] = pos;
+
+            digit_holder.append(pos);
+        }
+
+    });
+
+
+    var weekday_names = 'MON TUE WED THU FRI SAT SUN'.split(' '),
+        weekday_holder = clock.find('.weekdays');
+
+    $.each(weekday_names, function(){
+        weekday_holder.append('<span>' + this + '</span>');
+    });
+
+    var weekdays = clock.find('.weekdays span');
+
+    (function update_time(){
+
+        var now = moment().format("hhmmssdA");
+
+        digits.h1.attr('class', digit_to_name[now[0]]);
+        digits.h2.attr('class', digit_to_name[now[1]]);
+        digits.m1.attr('class', digit_to_name[now[2]]);
+        digits.m2.attr('class', digit_to_name[now[3]]);
+        digits.s1.attr('class', digit_to_name[now[4]]);
+        digits.s2.attr('class', digit_to_name[now[5]]);
+
+        var dow = now[6];
+        dow--;
+
+        if(dow < 0){
+            dow = 6;
+        }
+
+        weekdays.removeClass('active').eq(dow).addClass('active');
+
+       	ampm.text(now[7]+now[8]);
+
+        setTimeout(update_time, 1000);
+
+    })();
+    
+    $('.w').hide();
+
+    $('.d').click(function(){
+        $('.w').show();
+        $('.d').hide();
+    });
+
+    $('.w').click(function(){
+        $('.d').show();
+        $('.w').hide();
+    });
+
+
+    $('a.button').click(function(){
+        clock.toggleClass('light dark');
+        $('#date').toggleClass('white');
+        $('#theme .button-holder .button').toggleClass('next');
+		$('.clock').toggleClass('dark');
+
+    });
+
+});
+		</script>
+
+	<script type="text/javascript">
+		const deg = 6;
+		const hr = document.querySelector("#hr");
+		const mn = document.querySelector("#mn");
+		const sc = document.querySelector("#sc");
+		setInterval(() => {
+			let day = new Date();
+			let hh = day.getHours() * 30;
+			let mm = day.getMinutes() * deg;
+			let ss = day.getSeconds() * deg;
+			hr.style.transform = `rotateZ(${hh+(mm/12)}deg)`;
+			mn.style.transform = `rotateZ(${mm}deg)`;
+			sc.style.transform = `rotateZ(${ss}deg)`;
+
+		})
+
+	</script>
+</body>
+</html>
